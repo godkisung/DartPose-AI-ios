@@ -97,7 +97,10 @@ class DartAnalyzer {
             }
         }
 
-        // Step 5: 다중 투구 일관성 점수 계산
+        // Step 5: 동적 상위 투구 선택 (MAD 스코어링)
+        analyses = selectTopThrows(analyses: analyses, n: 3)
+
+        // Step 6: 다중 투구 일관성 점수 계산
         if analyses.count >= 2 {
             let consistency = metricsCalc.computeConsistencyScore(analyses: analyses)
             for i in 0..<analyses.count {
@@ -150,7 +153,7 @@ class DartAnalyzer {
 
     // MARK: - Validation
 
-    /// 분석 결과가 유효한 투구인지 검증합니다.
+    /// 분석 결과가 기본적으로 유효한 투구인지 검증합니다.
     private func validateThrow(
         analysis: ThrowAnalysis,
         frames: [FrameData],
@@ -170,50 +173,65 @@ class DartAnalyzer {
             return (false, "손목 좌표 부족")
         }
 
-        // 검증 1: 손목 최대 변위
+        // 검증 1: 손목 최대 변위 (단순 손 들기/내리기 등 초소형 움직임 필터)
         let origin = wristCoords[0]
         let maxDisp = wristCoords.map { distance2D($0, origin) }.max() ?? 0.0
         if maxDisp < DartConfig.validationMinWristDisplacement {
             return (false, "변위 부족 (\(String(format: "%.3f", maxDisp)))")
         }
 
-        // 검증 2: 릴리즈 타이밍 하한
-        if analysis.metrics.releaseTimingMs < DartConfig.validationMinReleaseTimingMs {
-            return (false, "릴리즈 타이밍 부족 (\(String(format: "%.0f", analysis.metrics.releaseTimingMs))ms)")
-        }
-
-        // 검증 3: 릴리즈 타이밍 상한
-        if analysis.metrics.releaseTimingMs > DartConfig.validationMaxReleaseTimingMs {
-            return (false, "릴리즈 타이밍 초과 (\(String(format: "%.0f", analysis.metrics.releaseTimingMs))ms)")
-        }
-
-        // 검증 4: ROM 필터
-        let rom = abs(analysis.metrics.takebackAngleDeg - analysis.metrics.releaseAngleDeg)
-        if rom < DartConfig.validationMinRomAngle {
-            return (false, "ROM 부족 (\(String(format: "%.1f", rom))°)")
-        }
-
-        // 검증 5: 테이크백 최소 각도
-        if analysis.metrics.takebackAngleDeg < DartConfig.validationMinTakebackAngle {
-            return (false, "팔꿈치 굽힘 부족 (\(String(format: "%.1f", analysis.metrics.takebackAngleDeg))°)")
-        }
-
-        // 검증 6: 테이크백 최대 각도
-        if analysis.metrics.takebackAngleDeg > DartConfig.validationMaxTakebackAngle {
-            return (false, "테이크백 각도 미달 (\(String(format: "%.1f", analysis.metrics.takebackAngleDeg))°)")
-        }
-
-        // 검증 7: 각속도 상한
+        // 검증 2: 비현실적인 팔꿈치 각속도 (추적 오류/노이즈 사이클 필터링)
         if analysis.metrics.maxElbowVelocityDegS > DartConfig.validationMaxElbowVelocity {
             return (false, "비현실적인 각속도 (\(String(format: "%.0f", analysis.metrics.maxElbowVelocityDegS))°/s)")
         }
 
-        // 검증 8: 각속도 하한
-        if analysis.metrics.maxElbowVelocityDegS < DartConfig.validationMinElbowVelocity {
-            return (false, "각속도 부족 (\(String(format: "%.0f", analysis.metrics.maxElbowVelocityDegS))°/s)")
+        // 나머지 필터링(타이밍, 테이크백 각도 등)은 selectTopThrows의 상대적 MAD 스코어링으로 처리
+        return (true, "")
+    }
+
+    // MARK: - Dynamic Selection
+
+    /// 모든 후보를 점수화하여 가장 투구에 가까운 상위 N개를 반환합니다.
+    ///
+    /// 고정된 임계값은 사람마다 다른 투구 폼에서 실패할 확률이 높습니다.
+    /// 대신, MAD(Median Absolute Deviation) 기반의 z-score를 사용하여
+    /// 전체 세션의 중앙값(Median) 군집에 가장 가까운 후보들을 선택합니다.
+    private func selectTopThrows(analyses: [ThrowAnalysis], n: Int = 3) -> [ThrowAnalysis] {
+        guard analyses.count > n else { return analyses }
+
+        let velocities = analyses.map { $0.metrics.maxElbowVelocityDegS }
+        let timings = analyses.map { $0.metrics.releaseTimingMs }
+
+        func madScore(_ arr: [Double]) -> [Double] {
+            let med = median(arr)
+            let absDevs = arr.map { abs($0 - med) }
+            let mad = max(median(absDevs), 1.0)
+            return arr.map { abs($0 - med) / mad }
         }
 
-        return (true, "")
+        let vScores = madScore(velocities)
+        let tScores = madScore(timings)
+        let totalScores = (0..<analyses.count).map { vScores[$0] + tScores[$0] }
+
+        // 점수가 낮은(중앙값에 가까운) 순서대로 정렬하여 상위 N개 인덱스 추출
+        let sortedIndices = (0..<analyses.count).sorted { totalScores[$0] < totalScores[$1] }
+        let topIndices = Array(sortedIndices.prefix(n)).sorted() // 시간 순서 복원
+
+        print("  ℹ selectTopThrows: \(analyses.count)개 후보 → 상위 \(n)개 선택")
+        var selected = [ThrowAnalysis]()
+        for i in 0..<analyses.count {
+            let marker = topIndices.contains(i) ? "✓" : "✗"
+            print("    \(marker) 투구\(i+1): vel=\(String(format: "%.0f", velocities[i]))°/s, timing=\(String(format: "%.0f", timings[i]))ms, score=\(String(format: "%.2f", totalScores[i]))")
+            if topIndices.contains(i) {
+                selected.append(analyses[i])
+            }
+        }
+
+        // 인덱스 재정렬
+        for i in 0..<selected.count {
+            selected[i].throwIndex = i + 1
+        }
+        return selected
     }
 
     // MARK: - Throwing Side Detection
