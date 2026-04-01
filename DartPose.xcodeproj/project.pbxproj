@@ -10,6 +10,7 @@
 		01FB9D6C26453F71F69BF5D8 /* DartPoseApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 091B73C5C12C057B8184C0E8 /* DartPoseApp.swift */; };
 		0E8D030CD7382C0AF615D583 /* ResultDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB598EF37FF5B49EC8516D1 /* ResultDetailView.swift */; };
 		11E904BFC2A1EA75A67E0297 /* AnalysisView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A092028CB16EE098010E4C8 /* AnalysisView.swift */; };
+		390972F68A7FA52EAB7348FD /* ThrowDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCE6B9FB0359729B9F943979 /* ThrowDetailView.swift */; };
 		3A7B7704C545BC469637CF33 /* pose_landmarker_full.task in Resources */ = {isa = PBXBuildFile; fileRef = A0B865F35750E061128B05AF /* pose_landmarker_full.task */; };
 		521B33BD6F7279BD1BCD5A5B /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = F50D2C1162ECB8EA0AB13D70 /* Models.swift */; };
 		5415E91A674C4BCF2C6A4692 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDEA2D4FF1B1C116371613E /* HomeView.swift */; };
@@ -23,6 +24,7 @@
 		978630C123A27A9A06B2E0BD /* PhaseDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76335849939B4F1F1E961941 /* PhaseDetector.swift */; };
 		A145D6BAE59633F12E3C7265 /* MetricsCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA6108FD159B61DFCAAEEF1F /* MetricsCalculator.swift */; };
 		A996E7572F3593D3B1580B4F /* ThrowSegmenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0F0F5507BD63AD1DC6C34E4 /* ThrowSegmenter.swift */; };
+		CA38C86C9513C5F8F9780D12 /* DartPoseUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8F50C1E058190A26623350 /* DartPoseUI.swift */; };
 		DEFB5028C5F0AB1721894CC7 /* AnalysisViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7D4BA7132FED89A635144E6 /* AnalysisViewModel.swift */; };
 		E31B04CAAFCA42083446843B /* PoseExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6ED7205AEC64F1F90D3A32F /* PoseExtractor.swift */; };
 		E8F796904E6B1668C574D6C8 /* SwiftTasksVision in Frameworks */ = {isa = PBXBuildFile; productRef = 766A5A5DC69A795409C60E68 /* SwiftTasksVision */; };
@@ -32,6 +34,7 @@
 		091B73C5C12C057B8184C0E8 /* DartPoseApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DartPoseApp.swift; sourceTree = "<group>"; };
 		1D636D36DF359AF4FB06372E /* PoseNormalizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PoseNormalizer.swift; sourceTree = "<group>"; };
 		2DDEA2D4FF1B1C116371613E /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		5E8F50C1E058190A26623350 /* DartPoseUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DartPoseUI.swift; sourceTree = "<group>"; };
 		6A092028CB16EE098010E4C8 /* AnalysisView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalysisView.swift; sourceTree = "<group>"; };
 		76335849939B4F1F1E961941 /* PhaseDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhaseDetector.swift; sourceTree = "<group>"; };
 		7FEDAC2809B5E8363CE1DC1A /* MathUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MathUtils.swift; sourceTree = "<group>"; };
@@ -46,6 +49,7 @@
 		CEB598EF37FF5B49EC8516D1 /* ResultDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultDetailView.swift; sourceTree = "<group>"; };
 		D79E482A5419C11F5C49661F /* FeedbackGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackGenerator.swift; sourceTree = "<group>"; };
 		DB276D997BAC379BB3FAF167 /* DartAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DartAnalyzer.swift; sourceTree = "<group>"; };
+		DCE6B9FB0359729B9F943979 /* ThrowDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThrowDetailView.swift; sourceTree = "<group>"; };
 		F4737AD544ED6D1B708D478F /* VideoPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPickerView.swift; sourceTree = "<group>"; };
 		F50D2C1162ECB8EA0AB13D70 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -111,8 +115,10 @@
 			isa = PBXGroup;
 			children = (
 				6A092028CB16EE098010E4C8 /* AnalysisView.swift */,
+				5E8F50C1E058190A26623350 /* DartPoseUI.swift */,
 				2DDEA2D4FF1B1C116371613E /* HomeView.swift */,
 				CEB598EF37FF5B49EC8516D1 /* ResultDetailView.swift */,
+				DCE6B9FB0359729B9F943979 /* ThrowDetailView.swift */,
 				F4737AD544ED6D1B708D478F /* VideoPickerView.swift */,
 			);
 			path = Views;
@@ -236,6 +242,7 @@
 				90FD07F68BDB1AFA1026BFE0 /* Config.swift in Sources */,
 				90319845FF6000DD1B0022DF /* DartAnalyzer.swift in Sources */,
 				01FB9D6C26453F71F69BF5D8 /* DartPoseApp.swift in Sources */,
+				CA38C86C9513C5F8F9780D12 /* DartPoseUI.swift in Sources */,
 				7E997270850B2F7B4CE2361B /* FeedbackGenerator.swift in Sources */,
 				5415E91A674C4BCF2C6A4692 /* HomeView.swift in Sources */,
 				952CBE70E87E5635B7FC7910 /* MathUtils.swift in Sources */,
@@ -246,6 +253,7 @@
 				69E3110BCFEACBF16961EE56 /* PoseNormalizer.swift in Sources */,
 				0E8D030CD7382C0AF615D583 /* ResultDetailView.swift in Sources */,
 				6A762F1F4EEEE0D25D21EEFA /* SampleVideoManager.swift in Sources */,
+				390972F68A7FA52EAB7348FD /* ThrowDetailView.swift in Sources */,
 				A996E7572F3593D3B1580B4F /* ThrowSegmenter.swift in Sources */,
 				961C151789C6998F61E79823 /* VideoPickerView.swift in Sources */,
 			);
