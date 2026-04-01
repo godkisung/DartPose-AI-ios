@@ -70,6 +70,7 @@ class PhaseDetector {
         else { return nil }
 
         // Step 1: 팔꿈치 각도 시계열 (원시 좌표 기반)
+        // MediaPipe Z축은 실측 metric depth이므로 3D 각도를 사용합니다.
         var elbowAngles = [Double](repeating: 0, count: n)
         for i in 0..<n {
             elbowAngles[i] = angle3D(p1: shoulder[i], p2: elbow[i], p3: wrist[i])
@@ -99,7 +100,7 @@ class PhaseDetector {
         let searchAngles = Array(smoothAngles.prefix(searchEnd))
 
         // 5° 미만 프레임 무시 (관절 감지 실패 배제)
-        var validAngles = searchAngles.map { $0 >= 5.0 ? $0 : Double.infinity }
+        let validAngles = searchAngles.map { $0 >= 5.0 ? $0 : Double.infinity }
         let takebackMaxLocal: Int
         if validAngles.contains(where: { $0 != Double.infinity }) {
             takebackMaxLocal = argmin(validAngles)

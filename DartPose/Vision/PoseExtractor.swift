@@ -1,19 +1,22 @@
 // PoseExtractor.swift
-// Apple Vision Framework 기반 포즈 추출 모듈
+// MediaPipe Tasks Vision 기반 포즈 추출 모듈
 //
 // 영상 파일에서 프레임별 관절 좌표를 추출합니다.
-// MediaPipe 대신 Apple Vision의 VNDetectHumanBodyPoseRequest를 사용합니다.
+// MediaPipe PoseLandmarker를 사용하여 BlazePose 33-keypoint topology를 출력합니다.
 //
-// ⚠️ 좌표계 차이:
-//   - MediaPipe: (0,0)=좌상단, Y↓ (화면 좌표)
-//   - Vision:    (0,0)=좌하단, Y↑ (수학 좌표)
-//   → 이 모듈에서 Y축을 반전하여 MediaPipe 호환 좌표로 출력합니다.
+// ✅ Apple Vision 대비 개선 사항:
+//   - 손가락 끝점(index, thumb) 지원 → fingerReleaseSpeed 활성화
+//   - 실측 metric Z-depth → detectThrowingSide 3-vote 시스템 복원
+//   - FSM 패리티 손실 없음 (Python Ground Truth와 1:1 좌표계 일치)
+//
+// 좌표계: (0,0)=좌상단, Y↓ (MediaPipe Python과 동일)
 
 import Foundation
 import AVFoundation
-import Vision
+import MediaPipeTasksVision
+import UIKit
 
-/// Apple Vision Framework 기반 포즈 추출기.
+/// MediaPipe PoseLandmarker 기반 포즈 추출기.
 ///
 /// 사용 예시:
 /// ```swift
@@ -22,33 +25,35 @@ import Vision
 /// ```
 class PoseExtractor {
 
-    // MARK: - Vision → 엔진 관절 매핑
+    // MARK: - BlazePose 33-Keypoint 인덱스 매핑
 
-    /// Vision 관절 이름 → 엔진 관절 이름 매핑 테이블
-    /// Vision Framework에서 지원하는 관절만 포함 (손가락은 미지원)
-    private static let jointMapping: [(VNHumanBodyPoseObservation.JointName, String)] = [
-        (.leftShoulder,  "leftShoulder"),
-        (.rightShoulder, "rightShoulder"),
-        (.leftElbow,     "leftElbow"),
-        (.rightElbow,    "rightElbow"),
-        (.leftWrist,     "leftWrist"),
-        (.rightWrist,    "rightWrist"),
-        (.leftHip,       "leftHip"),
-        (.rightHip,      "rightHip"),
-    ]
+    private enum MP {
+        static let leftShoulder  = 11
+        static let rightShoulder = 12
+        static let leftElbow     = 13
+        static let rightElbow    = 14
+        static let leftWrist     = 15
+        static let rightWrist    = 16
+        static let leftIndex     = 19   // 검지 끝
+        static let rightIndex    = 20
+        static let leftThumb     = 21   // 엄지 끝
+        static let rightThumb    = 22
+        static let leftHip       = 23
+        static let rightHip      = 24
+    }
 
     // MARK: - Public API
 
     /// 영상 파일에서 프레임별 포즈 데이터를 추출합니다.
     ///
-    /// 비동기로 AVAssetReader를 통해 프레임을 순회하며
-    /// VNDetectHumanBodyPoseRequest로 관절 좌표를 추출합니다.
+    /// AVAssetReader로 프레임을 순회하며 MediaPipe PoseLandmarker를
+    /// video 모드로 실행하여 33개 관절 좌표를 추출합니다.
     ///
     /// - Parameter url: 영상 파일 URL
     /// - Returns: (프레임 데이터 배열, FPS) 튜플
-    /// - Throws: 영상 읽기 또는 포즈 추출 실패 시 에러
+    /// - Throws: 영상 읽기, 모델 로드, 포즈 추출 실패 시 에러
     func extractFromVideo(url: URL) async throws -> ([FrameData], Double) {
-        // AVAsset에서 영상 정보 로드
+        // AVAsset 메타데이터 로드
         let asset = AVAsset(url: url)
         let duration = try await asset.load(.duration)
         let tracks = try await asset.loadTracks(withMediaType: .video)
@@ -56,10 +61,25 @@ class PoseExtractor {
             throw PoseExtractorError.noVideoTrack
         }
 
-        // FPS 및 해상도 로드
         let fps = try await Double(videoTrack.load(.nominalFrameRate))
         let naturalSize = try await videoTrack.load(.naturalSize)
-        print("  ℹ 영상 정보: \(Int(naturalSize.width))x\(Int(naturalSize.height)), \(String(format: "%.1f", fps))fps")
+        let preferredTransform = try await videoTrack.load(.preferredTransform)
+
+        let estimatedFrameCount = Int(duration.seconds * fps)
+        let orientation = imageOrientation(from: preferredTransform)
+        print("[PoseExtractor] 영상 정보: \(Int(naturalSize.width))x\(Int(naturalSize.height)), \(String(format: "%.1f", fps))fps")
+        print("[PoseExtractor] preferredTransform: a=\(preferredTransform.a), b=\(preferredTransform.b)")
+        print("[PoseExtractor] UIImage orientation: \(orientation.rawValue), 예상 프레임 수: \(estimatedFrameCount)")
+
+        // MediaPipe PoseLandmarker 초기화 (video 모드)
+        guard let modelPath = Bundle.main.path(forResource: "pose_landmarker_full", ofType: "task") else {
+            throw PoseExtractorError.modelNotFound
+        }
+        let options = PoseLandmarkerOptions()
+        options.baseOptions.modelAssetPath = modelPath
+        options.runningMode = .video
+        options.numPoses = 1
+        let landmarker = try PoseLandmarker(options: options)
 
         // AVAssetReader 설정
         let reader = try AVAssetReader(asset: asset)
@@ -70,12 +90,10 @@ class PoseExtractor {
         reader.add(output)
         reader.startReading()
 
-        // Vision 포즈 요청
-        let poseRequest = VNDetectHumanBodyPoseRequest()
-
         var frames: [FrameData] = []
         var frameIndex = 0
-        let dt = 1.0 / fps  // 프레임 간격 (초)
+        var poseSuccessCount = 0
+        let dt = 1.0 / fps
 
         // 프레임 순회
         while let sampleBuffer = output.copyNextSampleBuffer() {
@@ -87,100 +105,91 @@ class PoseExtractor {
                 continue
             }
 
-            // Vision 포즈 감지 실행
-            let handler = VNImageRequestHandler(
-                cvPixelBuffer: pixelBuffer,
-                orientation: .up,
-                options: [:]
-            )
-
             do {
-                try handler.perform([poseRequest])
+                let mpImage = try MPImage(pixelBuffer: pixelBuffer, orientation: orientation)
+                let result = try landmarker.detect(
+                    videoFrame: mpImage,
+                    timestampInMilliseconds: Int(timestampMs)
+                )
 
-                if let observation = poseRequest.results?.first {
-                    // 관절 좌표 추출 + 좌표계 변환
-                    let keypoints = convertObservation(
-                        observation: observation,
-                        imageHeight: naturalSize.height
-                    )
+                if let poseLandmarks = result.landmarks.first {
+                    let keypoints = convertLandmarks(poseLandmarks)
                     frames.append(FrameData(
                         frameIndex: frameIndex,
                         timestampMs: timestampMs,
                         keypoints: keypoints
                     ))
+                    if keypoints != nil { poseSuccessCount += 1 }
                 } else {
-                    // 포즈 감지 실패 → keypoints = nil
-                    frames.append(FrameData(
-                        frameIndex: frameIndex,
-                        timestampMs: timestampMs
-                    ))
+                    frames.append(FrameData(frameIndex: frameIndex, timestampMs: timestampMs))
                 }
             } catch {
-                frames.append(FrameData(
-                    frameIndex: frameIndex,
-                    timestampMs: timestampMs
-                ))
+                frames.append(FrameData(frameIndex: frameIndex, timestampMs: timestampMs))
             }
 
             frameIndex += 1
         }
 
-        print("  ✓ 포즈 추출 완료: \(frames.count)개 프레임")
+        // 추출 완료 로그
+        let successRate = frames.isEmpty ? 0.0 : Double(poseSuccessCount) / Double(frames.count) * 100.0
+        print("[PoseExtractor] 총 읽은 프레임: \(frames.count)")
+        print("[PoseExtractor] 포즈 추출 성공: \(poseSuccessCount) / \(frames.count) (\(String(format: "%.1f", successRate))%)")
+        if poseSuccessCount == 0 {
+            print("[PoseExtractor] ⚠️ 포즈 감지 0건 — 모델 파일 경로 또는 영상 내 인물 존재 여부를 확인하세요.")
+        }
+
         return (frames, fps)
     }
 
     // MARK: - Private
 
-    /// Vision 관절 관측을 엔진 Keypoints로 변환합니다.
+    /// AVFoundation preferredTransform을 UIImage.Orientation으로 변환합니다.
     ///
-    /// Vision 좌표계(Y↑)를 MediaPipe 호환 좌표계(Y↓)로 변환합니다.
-    /// - Y축 반전: y = 1.0 - y (정규화 좌표 기준)
-    /// - Z축: Vision에서는 confidence로 대체 (깊이 미지원)
-    private func convertObservation(
-        observation: VNHumanBodyPoseObservation,
-        imageHeight: CGFloat
-    ) -> Keypoints? {
-        /// 단일 관절 좌표 추출 + Y축 반전
-        func getPoint(_ jointName: VNHumanBodyPoseObservation.JointName) -> [Double] {
-            guard let point = try? observation.recognizedPoint(jointName),
-                  point.confidence > 0.1 else {
-                return [0, 0, 0]
-            }
-            // Vision: (0,0)=좌하단, Y↑ → MediaPipe 호환: Y↓
-            // Z축은 confidence로 대체 (0~1)
-            return [
-                Double(point.location.x),       // X: 그대로 (0~1 정규화)
-                1.0 - Double(point.location.y),  // Y: 반전 (위가 0이 되도록)
-                Double(point.confidence),        // Z: confidence 활용
-            ]
+    /// MPImage 초기화 시 올바른 orientation을 전달하기 위해 사용합니다.
+    private func imageOrientation(from transform: CGAffineTransform) -> UIImage.Orientation {
+        if abs(transform.a) < 0.1 {
+            return transform.b > 0 ? .right : .left
+        }
+        if transform.a < 0 {
+            return .down
+        }
+        return .up
+    }
+
+    /// MediaPipe NormalizedLandmark 배열을 엔진 Keypoints로 변환합니다.
+    ///
+    /// - 좌표계: MediaPipe normalized (0,0)=좌상단, Y↓ — Python과 동일, 변환 불필요.
+    /// - Z: 엉덩이 중점 기준 metric depth (음수 = 카메라에 가까움).
+    private func convertLandmarks(_ landmarks: [NormalizedLandmark]) -> Keypoints? {
+        guard landmarks.count > MP.rightHip else { return nil }
+
+        func lm(_ idx: Int) -> [Double] {
+            let l = landmarks[idx]
+            return [Double(l.x), Double(l.y), Double(l.z)]
         }
 
-        // 모든 관절 추출
-        let ls = getPoint(.leftShoulder)
-        let rs = getPoint(.rightShoulder)
-        let le = getPoint(.leftElbow)
-        let re = getPoint(.rightElbow)
-        let lw = getPoint(.leftWrist)
-        let rw = getPoint(.rightWrist)
-        let lh = getPoint(.leftHip)
-        let rh = getPoint(.rightHip)
+        let ls = lm(MP.leftShoulder)
+        let rs = lm(MP.rightShoulder)
 
-        // 모든 관절이 (0,0,0)이면 감지 실패
-        let allCoords = [ls, rs, le, re, lw, rw, lh, rh]
-        if allCoords.allSatisfy({ $0[0] == 0 && $0[1] == 0 }) {
+        // 핵심 관절이 원점이면 감지 실패로 처리
+        if ls[0] == 0 && ls[1] == 0 && rs[0] == 0 && rs[1] == 0 {
             return nil
         }
 
         return Keypoints(
-            leftShoulder: ls,
+            leftShoulder:  ls,
             rightShoulder: rs,
-            leftElbow: le,
-            rightElbow: re,
-            leftWrist: lw,
-            rightWrist: rw,
-            leftHip: lh,
-            rightHip: rh
-            // 손가락 좌표: Vision Framework에서 미지원 → nil (기본값)
+            leftElbow:     lm(MP.leftElbow),
+            rightElbow:    lm(MP.rightElbow),
+            leftWrist:     lm(MP.leftWrist),
+            rightWrist:    lm(MP.rightWrist),
+            leftHip:       lm(MP.leftHip),
+            rightHip:      lm(MP.rightHip),
+            leftThumbTip:  lm(MP.leftThumb),
+            rightThumbTip: lm(MP.rightThumb),
+            leftIndexTip:  lm(MP.leftIndex),
+            rightIndexTip: lm(MP.rightIndex)
+            // leftMiddleTip, rightMiddleTip: BlazePose-33에는 중지 끝점 미포함
         )
     }
 }
@@ -190,12 +199,15 @@ class PoseExtractor {
 /// PoseExtractor 에러 정의
 enum PoseExtractorError: Error, LocalizedError {
     case noVideoTrack
+    case modelNotFound
     case readerFailed(String)
 
     var errorDescription: String? {
         switch self {
         case .noVideoTrack:
             return "영상에서 비디오 트랙을 찾을 수 없습니다."
+        case .modelNotFound:
+            return "MediaPipe 모델 파일(pose_landmarker_full.task)을 번들에서 찾을 수 없습니다. 프로젝트에 파일을 추가했는지 확인하세요."
         case .readerFailed(let msg):
             return "영상 읽기 실패: \(msg)"
         }

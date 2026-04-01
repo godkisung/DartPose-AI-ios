@@ -63,13 +63,20 @@ class AnalysisViewModel: ObservableObject {
 
         do {
             // Step 1: 포즈 추출
-            let extractor = PoseExtractor()
-            let (frames, fps) = try await extractor.extractFromVideo(url: videoURL)
+            // ✅ Fix: @MainActor 클래스에서 extractFromVideo를 직접 호출하면
+            // copyNextSampleBuffer + VNRequest 루프가 메인 스레드를 차단합니다.
+            // Task.detached로 분리하여 UI 프리징과 silent failure를 방지합니다.
+            let (frames, fps) = try await Task.detached(priority: .userInitiated) { @Sendable in
+                let extractor = PoseExtractor()
+                return try await extractor.extractFromVideo(url: videoURL)
+            }.value
 
             guard !frames.isEmpty else {
                 state = .error("영상에서 프레임을 추출할 수 없습니다.")
                 return
             }
+            let validCount = frames.filter { $0.keypoints != nil }.count
+            print("UI: Video loaded — total frames=\(frames.count), valid keypoints=\(validCount), fps=\(fps)")
 
             // Step 2: 투구 분석
             state = .analyzing

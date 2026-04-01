@@ -134,6 +134,11 @@ class ThrowSegmenter {
         lastElbowAngles = elbowAngles
         lastSmoothedAngles = smoothedAngles
 
+        // [체크포인트 4] 팔꿈치 각도 배열 로그
+        print("[Segmenter] 팔꿈치 각도 배열 크기: \(elbowAngles.count)개")
+        print("[Segmenter] 원시 각도 범위: \(String(format: "%.1f", elbowAngles.min() ?? 0))°~\(String(format: "%.1f", elbowAngles.max() ?? 0))°")
+        print("[Segmenter] 스무딩 후 범위:  \(String(format: "%.1f", smoothedAngles.min() ?? 0))°~\(String(format: "%.1f", smoothedAngles.max() ?? 0))°")
+
         // Step 4: FSM으로 투구 사이클 감지
         let cycles = runFSM(smoothedAngles: smoothedAngles)
         lastCycleBoundaries = cycles
@@ -202,6 +207,7 @@ class ThrowSegmenter {
                 if drop > angleDropThreshold {
                     if i - lastCycleEnd >= minThrowInterval {
                         state = .cocking
+                        print("FSM: State changed to cocking at frame \(i) (drop=\(String(format: "%.1f", drop))°, angle=\(String(format: "%.1f", angle))°)")
                         stateEntryFrame = i
                         cockingEntryAngle = recentMaxAngle
                         cycleStart = max(0, i - minStateFrames)
@@ -221,6 +227,7 @@ class ThrowSegmenter {
                     // 각도가 최저점에서 releaseAngleRise 이상 증가 → RELEASING
                     if angle - minAngle > releaseAngleRise {
                         state = .releasing
+                        print("FSM: State changed to releasing at frame \(i) (rise=\(String(format: "%.1f", angle - minAngle))°)")
                         stateEntryFrame = i
                     }
                     // 타임아웃: 2초 이상 COCKING이면 무효 → IDLE
@@ -235,6 +242,7 @@ class ThrowSegmenter {
                     // 각도가 cocking 진입 각도 근처(±15°)로 돌아오면 → FOLLOW_THROUGH
                     if angle >= cockingEntryAngle - 15.0 {
                         state = .followThrough
+                        print("FSM: State changed to followThrough at frame \(i)")
                         stateEntryFrame = i
                         stabilityCount = 0
                     }
@@ -292,6 +300,7 @@ class ThrowSegmenter {
         }
 
         lastFSMStates = fsmStates
+        print("Valid candidates: \(cycles.count)")
         return cycles
     }
 
@@ -391,6 +400,8 @@ class ThrowSegmenter {
 
     /// 어깨-팔꿈치-손목 각도를 계산합니다.
     /// 각도는 카메라 거리에 불변합니다 (벡터 내적 기반).
+    ///
+    /// MediaPipe Z축은 실측 metric depth이므로 3D 각도를 사용합니다.
     func computeElbowAngles(
         shoulder: [[Double]],
         elbow: [[Double]],
@@ -403,6 +414,10 @@ class ThrowSegmenter {
             angles[i] = angle3D(p1: shoulder[i], p2: elbow[i], p3: wrist[i])
             // angle3D가 0.0 반환 시 (무효 벡터) 기본값 유지
             if angles[i] < 0.001 { angles[i] = 180.0 }
+        }
+        print("Angles calculated: \(n)")
+        if n > 0 {
+            print("Math: Raw elbow angle = \(String(format: "%.1f", angles[0]))° (frame0), min=\(String(format: "%.1f", angles.min() ?? 0))°, max=\(String(format: "%.1f", angles.max() ?? 0))°")
         }
         return angles
     }

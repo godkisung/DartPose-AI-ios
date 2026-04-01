@@ -33,9 +33,9 @@ enum DartConfig {
     static let validationMaxReleaseTimingMs: Double = 1200.0
     static let validationMinRomAngle: Double = 30.0
     static let elbowStabilityThreshold: Double = 0.005
-    static let takebackMinAngle: Int = 30
-    static let takebackMaxAngle: Int = 110
-    static let elbowExtensionVelMin: Int = 150
+    static let takebackMinAngle: Double = 30
+    static let takebackMaxAngle: Double = 110
+    static let elbowExtensionVelMin: Double = 150
     static let bodySwayThreshold: Double = 0.05
     static let shoulderStabilityThreshold: Double = 0.003
     static let throwMinFrames: Int = 15

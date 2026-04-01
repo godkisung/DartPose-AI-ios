@@ -1,0 +1,74 @@
+# 데이터 및 소스 (large 또는 외부 라이브러리)
+data/
+src/
+
+# ========== Xcode ==========
+# 사용자별 설정 (필수 제외)
+DartPose.xcodeproj/xcuserdata/
+DartPose.xcodeproj/project.xcworkspace/xcuserdata/
+
+# 빌드 산출물
+Build/
+build/
+DerivedData/
+.swiftpm/
+
+# 아카이브 & 디버그 심볼
+*.xcarchive
+*.dSYM/
+
+# ========== Swift Package Manager ==========
+.swiftpm/
+*.resolved
+
+# ========== Python ==========
+# 캐시 & 컴파일
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# 가상 환경
+venv/
+.venv/
+ENV/
+env/
+
+# pytest & 테스트 캐시
+.pytest_cache/
+.coverage
+htmlcov/
+
+# 배포 & 빌드
+dist/
+build/
+*.egg-info/
+*.egg
+
+# ========== IDE & Editor ==========
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ========== macOS ==========
+.DS_Store
+.AppleDouble/
+.LSOverride/
+
+# ========== 환경 변수 (민감 정보) ==========
+.env
+.env.local
+.env.*.local
+
+# ========== 로그 & 임시 파일 ==========
+*.log
+*.tmp
+*.bak
+*.swp
+*.swo
+
+# ========== 기타 ==========
+.agents/
+.claude/

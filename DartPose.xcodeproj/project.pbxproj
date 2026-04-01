@@ -1,0 +1,449 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		01FB9D6C26453F71F69BF5D8 /* DartPoseApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 091B73C5C12C057B8184C0E8 /* DartPoseApp.swift */; };
+		0E8D030CD7382C0AF615D583 /* ResultDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB598EF37FF5B49EC8516D1 /* ResultDetailView.swift */; };
+		11E904BFC2A1EA75A67E0297 /* AnalysisView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A092028CB16EE098010E4C8 /* AnalysisView.swift */; };
+		3A7B7704C545BC469637CF33 /* pose_landmarker_full.task in Resources */ = {isa = PBXBuildFile; fileRef = A0B865F35750E061128B05AF /* pose_landmarker_full.task */; };
+		521B33BD6F7279BD1BCD5A5B /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = F50D2C1162ECB8EA0AB13D70 /* Models.swift */; };
+		5415E91A674C4BCF2C6A4692 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDEA2D4FF1B1C116371613E /* HomeView.swift */; };
+		69E3110BCFEACBF16961EE56 /* PoseNormalizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D636D36DF359AF4FB06372E /* PoseNormalizer.swift */; };
+		6A762F1F4EEEE0D25D21EEFA /* SampleVideoManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADED838A4A5F96EA4142978C /* SampleVideoManager.swift */; };
+		7E997270850B2F7B4CE2361B /* FeedbackGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D79E482A5419C11F5C49661F /* FeedbackGenerator.swift */; };
+		90319845FF6000DD1B0022DF /* DartAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB276D997BAC379BB3FAF167 /* DartAnalyzer.swift */; };
+		90FD07F68BDB1AFA1026BFE0 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = C36959FB403C16F76A51DE10 /* Config.swift */; };
+		952CBE70E87E5635B7FC7910 /* MathUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FEDAC2809B5E8363CE1DC1A /* MathUtils.swift */; };
+		961C151789C6998F61E79823 /* VideoPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4737AD544ED6D1B708D478F /* VideoPickerView.swift */; };
+		978630C123A27A9A06B2E0BD /* PhaseDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76335849939B4F1F1E961941 /* PhaseDetector.swift */; };
+		A145D6BAE59633F12E3C7265 /* MetricsCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA6108FD159B61DFCAAEEF1F /* MetricsCalculator.swift */; };
+		A996E7572F3593D3B1580B4F /* ThrowSegmenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0F0F5507BD63AD1DC6C34E4 /* ThrowSegmenter.swift */; };
+		DEFB5028C5F0AB1721894CC7 /* AnalysisViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7D4BA7132FED89A635144E6 /* AnalysisViewModel.swift */; };
+		E31B04CAAFCA42083446843B /* PoseExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6ED7205AEC64F1F90D3A32F /* PoseExtractor.swift */; };
+		E8F796904E6B1668C574D6C8 /* SwiftTasksVision in Frameworks */ = {isa = PBXBuildFile; productRef = 766A5A5DC69A795409C60E68 /* SwiftTasksVision */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		091B73C5C12C057B8184C0E8 /* DartPoseApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DartPoseApp.swift; sourceTree = "<group>"; };
+		1D636D36DF359AF4FB06372E /* PoseNormalizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PoseNormalizer.swift; sourceTree = "<group>"; };
+		2DDEA2D4FF1B1C116371613E /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		6A092028CB16EE098010E4C8 /* AnalysisView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalysisView.swift; sourceTree = "<group>"; };
+		76335849939B4F1F1E961941 /* PhaseDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhaseDetector.swift; sourceTree = "<group>"; };
+		7FEDAC2809B5E8363CE1DC1A /* MathUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MathUtils.swift; sourceTree = "<group>"; };
+		9B5CFF67A85C4F149B67D515 /* DartPose.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = DartPose.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A0B865F35750E061128B05AF /* pose_landmarker_full.task */ = {isa = PBXFileReference; path = pose_landmarker_full.task; sourceTree = "<group>"; };
+		A0F0F5507BD63AD1DC6C34E4 /* ThrowSegmenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThrowSegmenter.swift; sourceTree = "<group>"; };
+		A7D4BA7132FED89A635144E6 /* AnalysisViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalysisViewModel.swift; sourceTree = "<group>"; };
+		ADED838A4A5F96EA4142978C /* SampleVideoManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleVideoManager.swift; sourceTree = "<group>"; };
+		C36959FB403C16F76A51DE10 /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
+		C6ED7205AEC64F1F90D3A32F /* PoseExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PoseExtractor.swift; sourceTree = "<group>"; };
+		CA6108FD159B61DFCAAEEF1F /* MetricsCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetricsCalculator.swift; sourceTree = "<group>"; };
+		CEB598EF37FF5B49EC8516D1 /* ResultDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultDetailView.swift; sourceTree = "<group>"; };
+		D79E482A5419C11F5C49661F /* FeedbackGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackGenerator.swift; sourceTree = "<group>"; };
+		DB276D997BAC379BB3FAF167 /* DartAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DartAnalyzer.swift; sourceTree = "<group>"; };
+		F4737AD544ED6D1B708D478F /* VideoPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPickerView.swift; sourceTree = "<group>"; };
+		F50D2C1162ECB8EA0AB13D70 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		7CE7AD619E9F4C6628A4164F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E8F796904E6B1668C574D6C8 /* SwiftTasksVision in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		12088A047E378F6390071738 /* Vision */ = {
+			isa = PBXGroup;
+			children = (
+				C6ED7205AEC64F1F90D3A32F /* PoseExtractor.swift */,
+			);
+			path = Vision;
+			sourceTree = "<group>";
+		};
+		4A4AFBDD8D23C17E05C7D0DE /* Engine */ = {
+			isa = PBXGroup;
+			children = (
+				DB276D997BAC379BB3FAF167 /* DartAnalyzer.swift */,
+				D79E482A5419C11F5C49661F /* FeedbackGenerator.swift */,
+				CA6108FD159B61DFCAAEEF1F /* MetricsCalculator.swift */,
+				76335849939B4F1F1E961941 /* PhaseDetector.swift */,
+				1D636D36DF359AF4FB06372E /* PoseNormalizer.swift */,
+				A0F0F5507BD63AD1DC6C34E4 /* ThrowSegmenter.swift */,
+			);
+			path = Engine;
+			sourceTree = "<group>";
+		};
+		53CBE1DE46E981B6B8D356D7 = {
+			isa = PBXGroup;
+			children = (
+				9FBDB8D52414781C8FE9AD09 /* DartPose */,
+				6EF28AFDC5B4376EAEF92262 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		53E20FF833CBD2CB1D63F569 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				091B73C5C12C057B8184C0E8 /* DartPoseApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		6EF28AFDC5B4376EAEF92262 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9B5CFF67A85C4F149B67D515 /* DartPose.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		97AB26847A628C47D4F607CE /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				6A092028CB16EE098010E4C8 /* AnalysisView.swift */,
+				2DDEA2D4FF1B1C116371613E /* HomeView.swift */,
+				CEB598EF37FF5B49EC8516D1 /* ResultDetailView.swift */,
+				F4737AD544ED6D1B708D478F /* VideoPickerView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		9FBDB8D52414781C8FE9AD09 /* DartPose */ = {
+			isa = PBXGroup;
+			children = (
+				A0B865F35750E061128B05AF /* pose_landmarker_full.task */,
+				53E20FF833CBD2CB1D63F569 /* App */,
+				4A4AFBDD8D23C17E05C7D0DE /* Engine */,
+				D656FC115043D32C34BF689F /* Models */,
+				FDBF09C0699313752712E906 /* Utilities */,
+				DA60E437245499BE4ED65CE8 /* ViewModels */,
+				97AB26847A628C47D4F607CE /* Views */,
+				12088A047E378F6390071738 /* Vision */,
+			);
+			path = DartPose;
+			sourceTree = "<group>";
+		};
+		D656FC115043D32C34BF689F /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				C36959FB403C16F76A51DE10 /* Config.swift */,
+				F50D2C1162ECB8EA0AB13D70 /* Models.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		DA60E437245499BE4ED65CE8 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				A7D4BA7132FED89A635144E6 /* AnalysisViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		FDBF09C0699313752712E906 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				7FEDAC2809B5E8363CE1DC1A /* MathUtils.swift */,
+				ADED838A4A5F96EA4142978C /* SampleVideoManager.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		578182505328D8D3688F6293 /* DartPose */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2D8472847E2F6C1A060EFE8F /* Build configuration list for PBXNativeTarget "DartPose" */;
+			buildPhases = (
+				82C82D730676C9451D9F1FA0 /* Sources */,
+				884D77311257FD49BAE8D86C /* Resources */,
+				7CE7AD619E9F4C6628A4164F /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = DartPose;
+			packageProductDependencies = (
+				766A5A5DC69A795409C60E68 /* SwiftTasksVision */,
+			);
+			productName = DartPose;
+			productReference = 9B5CFF67A85C4F149B67D515 /* DartPose.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		23D396520FBD3F69DD44178C /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+				};
+			};
+			buildConfigurationList = A04242333BD409E1CBF657DB /* Build configuration list for PBXProject "DartPose" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 53CBE1DE46E981B6B8D356D7;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				3A391BBA8BB66D4CF904F7EA /* XCRemoteSwiftPackageReference "SwiftTasksVision" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 6EF28AFDC5B4376EAEF92262 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				578182505328D8D3688F6293 /* DartPose */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		884D77311257FD49BAE8D86C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3A7B7704C545BC469637CF33 /* pose_landmarker_full.task in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		82C82D730676C9451D9F1FA0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				11E904BFC2A1EA75A67E0297 /* AnalysisView.swift in Sources */,
+				DEFB5028C5F0AB1721894CC7 /* AnalysisViewModel.swift in Sources */,
+				90FD07F68BDB1AFA1026BFE0 /* Config.swift in Sources */,
+				90319845FF6000DD1B0022DF /* DartAnalyzer.swift in Sources */,
+				01FB9D6C26453F71F69BF5D8 /* DartPoseApp.swift in Sources */,
+				7E997270850B2F7B4CE2361B /* FeedbackGenerator.swift in Sources */,
+				5415E91A674C4BCF2C6A4692 /* HomeView.swift in Sources */,
+				952CBE70E87E5635B7FC7910 /* MathUtils.swift in Sources */,
+				A145D6BAE59633F12E3C7265 /* MetricsCalculator.swift in Sources */,
+				521B33BD6F7279BD1BCD5A5B /* Models.swift in Sources */,
+				978630C123A27A9A06B2E0BD /* PhaseDetector.swift in Sources */,
+				E31B04CAAFCA42083446843B /* PoseExtractor.swift in Sources */,
+				69E3110BCFEACBF16961EE56 /* PoseNormalizer.swift in Sources */,
+				0E8D030CD7382C0AF615D583 /* ResultDetailView.swift in Sources */,
+				6A762F1F4EEEE0D25D21EEFA /* SampleVideoManager.swift in Sources */,
+				A996E7572F3593D3B1580B4F /* ThrowSegmenter.swift in Sources */,
+				961C151789C6998F61E79823 /* VideoPickerView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		4DD2A2689CA51DC0E9EA2ED2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.godkisung.DartPose;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		5858829AADF4FE83E13C0E2F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.godkisung.DartPose;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		5E7C2ECD0629A126E803FFB3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		DCB4630BF4F5DD3ECC452F8C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		2D8472847E2F6C1A060EFE8F /* Build configuration list for PBXNativeTarget "DartPose" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4DD2A2689CA51DC0E9EA2ED2 /* Debug */,
+				5858829AADF4FE83E13C0E2F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		A04242333BD409E1CBF657DB /* Build configuration list for PBXProject "DartPose" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DCB4630BF4F5DD3ECC452F8C /* Debug */,
+				5E7C2ECD0629A126E803FFB3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		3A391BBA8BB66D4CF904F7EA /* XCRemoteSwiftPackageReference "SwiftTasksVision" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/paescebu/SwiftTasksVision";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.10.14;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		766A5A5DC69A795409C60E68 /* SwiftTasksVision */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3A391BBA8BB66D4CF904F7EA /* XCRemoteSwiftPackageReference "SwiftTasksVision" */;
+			productName = SwiftTasksVision;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 23D396520FBD3F69DD44178C /* Project object */;
+}

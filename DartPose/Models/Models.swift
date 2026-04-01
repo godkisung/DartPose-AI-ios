@@ -146,7 +146,7 @@ struct ThrowAnalysis: Codable, Identifiable {
     /// `Identifiable` 프로토콜용 고유 ID
     var id: UUID = UUID()
     /// 투구 순번 (1부터 시작)
-    let throwIndex: Int
+    var throwIndex: Int
     /// 투구 팔 방향 ("left" 또는 "right")
     let throwingArm: String
     /// 프레임 범위 [시작, 끝] 절대 인덱스
@@ -158,7 +158,11 @@ struct ThrowAnalysis: Codable, Identifiable {
     /// 감지된 이슈 목록
     var issues: [String] = []
 
-    /// CodingKeys — id는 JSON에 포함하지 않음
+    /// Phase 경계 프레임에서의 관절 좌표 스냅샷 (스켈레톤 시각화용)
+    /// Keys: "address", "takebackMax", "release", "followThrough"
+    var phaseKeypoints: [String: Keypoints] = [:]
+
+    /// CodingKeys — id, phaseKeypoints는 JSON에 포함하지 않음
     enum CodingKeys: String, CodingKey {
         case throwIndex, throwingArm, frameRange, phases, metrics, issues
     }

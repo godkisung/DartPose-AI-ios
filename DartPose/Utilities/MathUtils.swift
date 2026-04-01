@@ -67,6 +67,25 @@ func angle3D(p1: [Double], p2: [Double], p3: [Double]) -> Double {
     return acos(cosVal) * 180.0 / .pi
 }
 
+/// XY 이미지 좌표 기반 p2를 꼭짓점으로 하는 3점 각도를 도(degree) 단위로 반환합니다.
+/// Z축을 무시합니다.
+///
+/// ⚠️ Apple Vision Framework는 Z축을 실제 depth가 아닌 confidence(0~1)로 반환합니다.
+/// 팔꿈치 각도 계산에는 이 함수를 사용해야 합니다.
+/// - Returns: 각도 (도). 유효하지 않은 입력이면 0.0.
+func angle2D(p1: [Double], p2: [Double], p3: [Double]) -> Double {
+    let v1 = [p1[0] - p2[0], p1[1] - p2[1]]
+    let v2 = [p3[0] - p2[0], p3[1] - p2[1]]
+
+    let n1 = sqrt(v1[0]*v1[0] + v1[1]*v1[1])
+    let n2 = sqrt(v2[0]*v2[0] + v2[1]*v2[1])
+
+    guard n1 > 1e-8, n2 > 1e-8 else { return 0.0 }
+
+    let cosVal = max(-1.0, min(1.0, (v1[0]*v2[0] + v1[1]*v2[1]) / (n1 * n2)))
+    return acos(cosVal) * 180.0 / .pi
+}
+
 // MARK: - 신호 처리 (vDSP 기반)
 
 /// 1D 신호에 이동평균(moving average) 스무딩을 적용합니다.

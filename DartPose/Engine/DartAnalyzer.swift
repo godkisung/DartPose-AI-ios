@@ -142,13 +142,31 @@ class DartAnalyzer {
             frames: frames, normalizedData: normalized, phases: phases, side: side
         )
 
-        return ThrowAnalysis(
+        // Phase 경계 프레임에서 관절 좌표 스냅샷 수집 (스켈레톤 시각화용)
+        var phaseKPs: [String: Keypoints] = [:]
+        let phaseFrameMap: [(String, Int)] = [
+            ("address",       phases.address),
+            ("takebackMax",   phases.takebackMax),
+            ("release",       phases.release),
+            ("followThrough", phases.followThrough),
+        ]
+        for (name, absIdx) in phaseFrameMap {
+            let frame = frames.first { $0.frameIndex == absIdx }
+                     ?? frames.min(by: { abs($0.frameIndex - absIdx) < abs($1.frameIndex - absIdx) })
+            if let kp = frame?.keypoints {
+                phaseKPs[name] = kp
+            }
+        }
+
+        var analysis = ThrowAnalysis(
             throwIndex: throwIndex,
             throwingArm: side,
             frameRange: [frames[0].frameIndex, frames[frames.count - 1].frameIndex],
             phases: phases,
             metrics: metrics
         )
+        analysis.phaseKeypoints = phaseKPs
+        return analysis
     }
 
     // MARK: - Validation
@@ -238,9 +256,10 @@ class DartAnalyzer {
 
     /// 투구 팔(좌/우)을 자동 감지합니다 (3개 기준 다수결 투표).
     ///
-    /// 1. Visibility: 투구 팔 관절의 평균 가시도
-    /// 2. Depth (Z): 투구 팔이 카메라에 더 가까움
-    /// 3. Variance: 투구 손목의 XY 분산이 더 큼
+    /// MediaPipe의 실측 metric Z-depth를 활용한 3-vote 시스템:
+    /// 1. Z-depth mean: 투구 팔이 카메라에 더 가까움 → Z 평균이 더 낮음 (음수 방향)
+    /// 2. Z-depth variance: 투구 팔이 전후로 더 많이 움직임 → Z 분산이 더 큼
+    /// 3. XY variance: 투구 손목의 이미지 평면 내 이동이 더 큼
     func detectThrowingSide(frames: [FrameData]) -> String {
         let armJoints = ["Shoulder", "Elbow", "Wrist"]
 
@@ -265,14 +284,19 @@ class DartAnalyzer {
 
         var votes = 0
 
-        // 기준 1: Z축 깊이 (값이 작을수록 카메라에 가까움 = 투구 팔)
+        // Vote 1: Z-depth mean (MediaPipe: 작은 Z = 카메라에 가까움 = 투구 팔)
         if !rZ.isEmpty, !lZ.isEmpty {
             let rMean = rZ.reduce(0, +) / Double(rZ.count)
             let lMean = lZ.reduce(0, +) / Double(lZ.count)
             votes += rMean < lMean ? 1 : -1
         }
 
-        // 기준 2: 손목 XY 분산
+        // Vote 2: Z-depth variance (투구 팔은 전후 동작으로 Z 변화가 더 큼)
+        if rZ.count >= 3, lZ.count >= 3 {
+            votes += variance(rZ) > variance(lZ) ? 1 : -1
+        }
+
+        // Vote 3: XY variance (투구 손목은 이미지 평면 내 이동이 더 큼)
         if rWristXY.count >= 3, lWristXY.count >= 3 {
             let rVarX = variance(rWristXY.map { $0[0] })
             let rVarY = variance(rWristXY.map { $0[1] })

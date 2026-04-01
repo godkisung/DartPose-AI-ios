@@ -38,13 +38,55 @@ struct VideoPickerView: View {
                         .font(.title2.bold())
                         .foregroundColor(.white)
 
-                    Text("갤러리에서 분석할 영상을 선택하세요")
+                    Text("갤러리 또는 샘플 영상을 선택하세요")
                         .font(.subheadline)
                         .foregroundColor(.gray)
                 }
                 .padding(.top, 40)
 
                 Spacer()
+
+                // 샘플 영상 버튼
+                let samples = SampleVideoManager.shared.availableSamples
+                if !samples.isEmpty {
+                    Menu {
+                        ForEach(samples, id: \.filename) { sample in
+                            Button(action: {
+                                videoURL = sample.url
+                                navigateToAnalysis = true
+                            }) {
+                                HStack {
+                                    Image(systemName: "play.circle.fill")
+                                    Text("샘플 \(sample.name)")
+                                }
+                            }
+                        }
+                    } label: {
+                        VStack(spacing: 16) {
+                            Image(systemName: "star.circle.fill")
+                                .font(.system(size: 40))
+                                .foregroundColor(.yellow)
+
+                            Text("샘플 영상 선택")
+                                .font(.headline)
+                                .foregroundColor(.white)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 160)
+                        .background(
+                            RoundedRectangle(cornerRadius: 16)
+                                .fill(Color.white.opacity(0.05))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 16)
+                                        .strokeBorder(
+                                            style: StrokeStyle(lineWidth: 2, dash: [8])
+                                        )
+                                        .foregroundColor(.yellow.opacity(0.3))
+                                )
+                        )
+                    }
+                    .padding(.horizontal, 24)
+                }
 
                 // 영상 선택 버튼
                 PhotosPicker(
@@ -95,17 +137,13 @@ struct VideoPickerView: View {
                 Spacer()
             }
 
-            // 분석 화면으로 네비게이션
-            NavigationLink(
-                destination: AnalysisView(videoURL: videoURL ?? URL(fileURLWithPath: "")),
-                isActive: $navigateToAnalysis
-            ) {
-                EmptyView()
-            }
         }
         .navigationTitle("영상 선택")
         .navigationBarTitleDisplayMode(.inline)
-        .onChange(of: selectedItem) { newItem in
+        .navigationDestination(isPresented: $navigateToAnalysis) {
+            AnalysisView(videoURL: videoURL ?? URL(fileURLWithPath: ""))
+        }
+        .onChange(of: selectedItem) { _, newItem in
             guard let item = newItem else { return }
             loadVideo(from: item)
         }

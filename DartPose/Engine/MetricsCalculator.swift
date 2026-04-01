@@ -58,7 +58,6 @@ class MetricsCalculator {
         }
 
         let addrI = localIdx(phases.address)
-        let tbStartI = localIdx(phases.takebackStart)
         let tbMaxI = localIdx(phases.takebackMax)
         let relI = localIdx(phases.release)
         let ftI = localIdx(phases.followThrough)
@@ -87,6 +86,7 @@ class MetricsCalculator {
             ?? [[Double]](repeating: [0, 0, 0], count: n)
 
         // 팔꿈치 각도 시계열 (원시 좌표 기반)
+        // MediaPipe Z축은 실측 metric depth이므로 3D 각도를 사용합니다.
         var elbowAngles = [Double](repeating: 0, count: n)
         for i in 0..<n {
             elbowAngles[i] = angle3D(p1: rawShoulder[i], p2: rawElbow[i], p3: rawWrist[i])

@@ -7,15 +7,21 @@
 import SwiftUI
 
 /// 투구 상세 결과 화면.
-/// 10가지 생체역학 메트릭을 게이지와 수치로 표시합니다.
+/// 10가지 생체역학 메트릭과 스켈레톤 오버레이를 표시합니다.
 struct ResultDetailView: View {
     let throwAnalysis: ThrowAnalysis
+
+    /// 스켈레톤 뷰에서 선택된 Phase
+    @State private var selectedPhase: String = "release"
 
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
                 // 헤더
                 headerSection
+
+                // ✅ 스켈레톤 시각화 (Phase별 포즈 오버레이)
+                skeletonSection
 
                 // 안정성 지표
                 metricsSection(
@@ -155,6 +161,70 @@ struct ResultDetailView: View {
         .padding(.horizontal, 16)
     }
 
+    // MARK: - 스켈레톤 시각화
+
+    private var skeletonSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("🦴 포즈 스켈레톤")
+                .font(.headline)
+                .foregroundColor(.white)
+                .padding(.horizontal, 16)
+
+            // Phase 선택 Picker
+            Picker("Phase", selection: $selectedPhase) {
+                Text("Address").tag("address")
+                Text("테이크백").tag("takebackMax")
+                Text("릴리즈").tag("release")
+                Text("팔로스루").tag("followThrough")
+            }
+            .pickerStyle(.segmented)
+            .padding(.horizontal, 16)
+
+            // 스켈레톤 Canvas
+            ZStack {
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color.black.opacity(0.4))
+
+                if let kp = throwAnalysis.phaseKeypoints[selectedPhase] {
+                    SkeletonCanvasView(
+                        keypoints: kp,
+                        throwingArm: throwAnalysis.throwingArm
+                    )
+                    .padding(12)
+                    .onAppear {
+                        let dict = kp.toDict()
+                        print("UI: Skeleton keypoints for phase '\(selectedPhase)': \(dict.count) joints, keys=\(dict.keys.sorted().joined(separator: ","))")
+                    }
+                } else {
+                    Text("포즈 데이터 없음")
+                        .font(.caption)
+                        .foregroundColor(.gray)
+                        .onAppear {
+                            print("UI: No skeleton keypoints for phase '\(selectedPhase)' — phaseKeypoints keys: \(throwAnalysis.phaseKeypoints.keys.sorted().joined(separator: ","))")
+                        }
+                }
+            }
+            .frame(height: 240)
+            .padding(.horizontal, 16)
+
+            // Phase 라벨
+            Text(phaseLabel(selectedPhase))
+                .font(.caption)
+                .foregroundColor(.gray)
+                .frame(maxWidth: .infinity, alignment: .center)
+        }
+    }
+
+    private func phaseLabel(_ phase: String) -> String {
+        switch phase {
+        case "address":      return "Address — 조준 시작"
+        case "takebackMax":  return "Takeback Max — 팔꿈치 최대 굽힘"
+        case "release":      return "Release — 다트 릴리즈 순간"
+        case "followThrough": return "Follow-through — 팔 완전히 펴짐"
+        default:             return phase
+        }
+    }
+
     // MARK: - 메트릭 섹션
 
     private func metricsSection(title: String, metrics: [MetricItem]) -> some View {
@@ -270,6 +340,78 @@ struct ResultDetailView: View {
             Text("Frame \(frame)")
                 .font(.system(.caption, design: .monospaced))
                 .foregroundColor(.gray)
+        }
+    }
+}
+
+// MARK: - 스켈레톤 Canvas View
+
+/// 관절 좌표를 받아 스틱 피겨를 그리는 SwiftUI Canvas 뷰.
+/// Vision의 정규화 좌표(0~1, Y↓)를 캔버스 크기에 맞게 스케일링합니다.
+struct SkeletonCanvasView: View {
+
+    let keypoints: Keypoints
+    let throwingArm: String
+
+    // 그릴 뼈대(bone) 연결 목록: (시작관절, 끝관절, 색상)
+    private var bones: [(String, String, Color)] {
+        let arm = throwingArm
+        let off = arm == "right" ? "left" : "right"
+        return [
+            // 몸통
+            ("leftShoulder",  "rightShoulder", .gray),
+            ("leftHip",       "rightHip",      .gray),
+            ("\(arm)Shoulder", "\(arm)Hip",    .gray),
+            ("\(off)Shoulder", "\(off)Hip",    .gray),
+            // 비투구 팔 (흰색)
+            ("\(off)Shoulder", "\(off)Elbow",  .white.opacity(0.5)),
+            ("\(off)Elbow",    "\(off)Wrist",  .white.opacity(0.5)),
+            // 투구 팔 (시안 — 강조)
+            ("\(arm)Shoulder", "\(arm)Elbow",  .cyan),
+            ("\(arm)Elbow",    "\(arm)Wrist",  .cyan),
+        ]
+    }
+
+    var body: some View {
+        Canvas { context, size in
+            let kpDict = keypoints.toDict()
+
+            /// 관절 이름 → Canvas 좌표 변환
+            func pt(_ name: String) -> CGPoint? {
+                guard let coords = kpDict[name],
+                      coords.count >= 2,
+                      coords[0] != 0 || coords[1] != 0 else { return nil }
+                return CGPoint(
+                    x: coords[0] * size.width,
+                    y: coords[1] * size.height   // Y는 이미 ↓ 방향으로 저장됨
+                )
+            }
+
+            // 뼈대 선 그리기
+            for (from, to, color) in bones {
+                guard let p1 = pt(from), let p2 = pt(to) else { continue }
+                var path = Path()
+                path.move(to: p1)
+                path.addLine(to: p2)
+                context.stroke(path, with: .color(color), lineWidth: 3)
+            }
+
+            // 관절 점 그리기
+            let joints = ["leftShoulder", "rightShoulder",
+                          "leftElbow",    "rightElbow",
+                          "leftWrist",    "rightWrist",
+                          "leftHip",      "rightHip"]
+            for name in joints {
+                guard let p = pt(name) else { continue }
+                let isThrowingArm = name.hasPrefix(throwingArm)
+                let radius: CGFloat = isThrowingArm ? 6 : 4
+                let fillColor: Color = isThrowingArm ? .cyan : .white.opacity(0.7)
+                let rect = CGRect(
+                    x: p.x - radius, y: p.y - radius,
+                    width: radius * 2, height: radius * 2
+                )
+                context.fill(Path(ellipseIn: rect), with: .color(fillColor))
+            }
         }
     }
 }

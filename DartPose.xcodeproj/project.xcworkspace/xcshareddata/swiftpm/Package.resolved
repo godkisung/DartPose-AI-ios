@@ -1,0 +1,15 @@
+{
+  "originHash" : "5e26c597faa3572714b4b5d172f66972a3d95963b9ba5ad8b94fc08f3d321489",
+  "pins" : [
+    {
+      "identity" : "swifttasksvision",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/paescebu/SwiftTasksVision",
+      "state" : {
+        "revision" : "2cba94cf7d38ace98e32dc08d1de7a6895f05057",
+        "version" : "0.10.21"
+      }
+    }
+  ],
+  "version" : 3
+}
